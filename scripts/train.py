@@ -1,3 +1,9 @@
+import sys
+import os
+
+# add project root to python path
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(ROOT_DIR)
 # from configs.config import CFG
 # from data.dataset import HillshadeDataset
 # from data.transforms import get_transforms
