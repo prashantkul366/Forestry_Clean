@@ -10,6 +10,7 @@ from einops import rearrange
 from timm.models.layers import DropPath, to_2tuple, trunc_normal_
 import copy
 
+import torch.nn.functional as F
 
 class Mlp(nn.Module):
     def __init__(self, in_features, hidden_features=None, out_features=None, act_layer=nn.GELU, drop=0.):
@@ -834,7 +835,7 @@ class SwinUnet(nn.Module):
     #     logits = self.swin_unet(x)
     #     return logits
 
-    import torch.nn.functional as F
+    
 
     def forward(self, x):
         if x.size(1) == 4 and self.input_adapter is not None:
