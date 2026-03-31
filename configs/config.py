@@ -13,11 +13,13 @@ class CFG:
     PATCH_SIZE  = 256
     BATCH_SIZE  = 8
     NUM_WORKERS = 2
-    EPOCHS      = 200
+    # EPOCHS      = 200
+    EPOCHS      = 10
     LR          = 3e-4
     DEVICE      = "cuda" if torch.cuda.is_available() else "cpu"
 
-    PATIENCE = 50
+    # PATIENCE = 50
+    PATIENCE = 5
 
     ENCODER      = "mit_b2"
     IN_CHANNELS  = 4
