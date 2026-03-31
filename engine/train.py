@@ -6,6 +6,7 @@ from engine.metrics import compute_metrics
 import numpy as np  
 from losses.losses import CombinedLoss
 from utils.threshold import find_best_threshold
+import torch.nn.functional as F
 
 # =============================================================================
 #  CELL 8 — Train / Val loops
@@ -59,7 +60,7 @@ def train_one_epoch(model, loader, loss_fn, optimizer, cfg):
         if not hasattr(cfg, "DEBUG_PRINTED"):
             print(f"[DEBUG] resize={resize_needed} | imgs={imgs.shape} | logits={logits.shape} | masks={masks.shape}")
             cfg.DEBUG_PRINTED = True
-            
+
         optimizer.zero_grad()
         loss   = loss_fn(logits, masks)
         loss.backward()
