@@ -8,6 +8,7 @@ from models.UCTransNet import UCTransNet
 from models.TransUNet import TransUNet
 from models.SwinUnet import SwinUnet
 from models.ACC_UNet import ACC_UNet
+from models.H_vmunet import H_vmunet
 # from configs.config import UCTransNetConfig
 
 def build_model():
@@ -50,6 +51,15 @@ def build_model():
             n_channels=CFG.IN_CHANNELS,
             n_classes=1,
             n_filts=32
+        )
+    elif arch == "h_vmunet":
+        m = H_vmunet(
+            num_classes=1,
+            input_channels=CFG.IN_CHANNELS,   
+            c_list=[8,16,32,64,128,256],     
+            depths=[2,2,2,2],
+            drop_path_rate=0.0,
+            bridge=True
         )
     else:
         raise ValueError(f"Unknown arch: {arch}")
