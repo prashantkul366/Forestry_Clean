@@ -30,11 +30,11 @@ def build_model():
         )
 
     elif arch == "transunet":
-    m = TransUNet(
-        n_channels=CFG.IN_CHANNELS,  
-        n_classes=1,
-        img_size=CFG.PATCH_SIZE
-    )
+        m = TransUNet(
+            n_channels=CFG.IN_CHANNELS,  
+            n_classes=1,
+            img_size=CFG.PATCH_SIZE
+        )
     else:
         raise ValueError(f"Unknown arch: {arch}")
     return m.to(CFG.DEVICE)
