@@ -5,7 +5,7 @@ import ml_collections
 
 from models.UNext import UNext
 from models.UCTransNet import UCTransNet
-from configs.config import UCTransNetConfig
+# from configs.config import UCTransNetConfig
 
 def build_model():
     arch = CFG.ARCHITECTURE.lower()
