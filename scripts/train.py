@@ -1,10 +1,11 @@
 import sys
 import os
-from utils.seed import set_seed
+
 
 # add project root to python path
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(ROOT_DIR)
+from utils.seed import set_seed
 # from configs.config import CFG
 # from data.dataset import HillshadeDataset
 # from data.transforms import get_transforms
