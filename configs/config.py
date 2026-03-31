@@ -25,7 +25,8 @@ class CFG:
     IN_CHANNELS  = 4
     # ARCHITECTURE = "segformer"
     # ARCHITECTURE = "unext"
-    ARCHITECTURE = "uctransnet"
+    # ARCHITECTURE = "uctransnet"
+    ARCHITECTURE = "transunet"
 
     RESUME = False
     RESUME_PATH = None  # or specific checkpoint path

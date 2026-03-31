@@ -5,6 +5,7 @@ import ml_collections
 
 from models.UNext import UNext
 from models.UCTransNet import UCTransNet
+from nets.TransUNet import TransUNet
 # from configs.config import UCTransNetConfig
 
 def build_model():
@@ -23,13 +24,17 @@ def build_model():
     
     elif arch == "uctransnet":
         config = get_CTranS_config()   
-
         m = UCTransNet(
-            config=config,
-            n_channels=CFG.IN_CHANNELS,   # 4 channels
-            n_classes=1,
-            img_size=CFG.PATCH_SIZE
+            config=config, n_channels=CFG.IN_CHANNELS, 
+            n_classes=1, img_size=CFG.PATCH_SIZE
         )
+
+    elif arch == "transunet":
+    m = TransUNet(
+        n_channels=CFG.IN_CHANNELS,  
+        n_classes=1,
+        img_size=CFG.PATCH_SIZE
+    )
     else:
         raise ValueError(f"Unknown arch: {arch}")
     return m.to(CFG.DEVICE)
