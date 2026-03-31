@@ -30,7 +30,8 @@ class CFG:
     # ARCHITECTURE = "transunet"
     # ARCHITECTURE = "swinunet"
     # ARCHITECTURE = "acc_unet"
-    ARCHITECTURE = "h_vmunet"
+    # ARCHITECTURE = "h_vmunet"
+    ARCHITECTURE = "ege_unet"
 
     RESUME = False
     RESUME_PATH = None  # or specific checkpoint path
