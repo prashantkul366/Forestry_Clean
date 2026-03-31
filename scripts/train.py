@@ -14,7 +14,7 @@ from datetime import datetime
 
 import torch
 from torch.utils.data import DataLoader
-
+import torch.nn.functional as F
 from configs.config import CFG
 from data.dataset import HillshadeDataset
 from data.transforms import get_transforms
