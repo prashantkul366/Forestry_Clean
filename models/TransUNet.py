@@ -27,6 +27,7 @@ class TransUNet(nn.Module):
         self.n_channels = n_channels
         self.n_classes = n_classes
         self._binary = (n_classes == 1)
+        self.input_adapter = nn.Conv2d(n_channels, 3, kernel_size=1)
 
         # pick a backbone: 'ViT-B_16' (pure ViT) or 'R50-ViT-B_16' (ResNet50+ViT)
         cfg = CONFIGS[backbone]
@@ -56,6 +57,7 @@ class TransUNet(nn.Module):
                 print(f"[TransUNet] pretrained load skipped: {e}")
 
     def forward(self, x):
+        x = self.input_adapter(x)
         logits = self.vit(x)  # (B, C, H, W)
         # if self._binary:
         #     return torch.sigmoid(logits)  # matches your WeightedDiceBCE (expects probs)
