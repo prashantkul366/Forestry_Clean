@@ -323,6 +323,8 @@ class SAM2Seg(nn.Module):
                 "  or:  pip install ultralytics  (includes SAM2)"
             )
 
+            # Note: SAM2Seg is still experimental and may require adjustments based on the SAM2 API and feature outputs.
+
         if input_channels != 3:
             self.chan_adapt = nn.Conv2d(input_channels, 3, 1, bias=False)
         else:
