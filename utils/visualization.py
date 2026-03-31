@@ -1,4 +1,11 @@
-def visualize_predictions(model, val_loader, threshold, n=4):
+import torch
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+from engine.metrics import compute_metrics
+
+
+def visualize_predictions(model, val_loader, threshold, n=4, save_path=None):
     model.eval()
     imgs, masks = next(iter(val_loader))
     with torch.no_grad():

@@ -1,4 +1,9 @@
-def plot_history(history):
+# def plot_history(history):
+
+import matplotlib.pyplot as plt
+
+
+def plot_history(history, save_path=None):
     epochs = range(1, len(history["train_loss"]) + 1)
 
     fig, axes = plt.subplots(2, 3, figsize=(18, 10))
@@ -39,7 +44,11 @@ def plot_history(history):
 
     plt.suptitle(f"{CFG.ARCHITECTURE}/{CFG.ENCODER}  —  Training History", fontsize=13)
     plt.tight_layout()
-    plt.savefig("training_curves.png", dpi=120)
+    # plt.savefig("training_curves.png", dpi=120)
+    if save_path is not None:
+        plt.savefig(save_path, dpi=120)
+    else:
+        plt.savefig("training_curves.png", dpi=120)
     plt.show()
     print("Saved training_curves.png")
 
