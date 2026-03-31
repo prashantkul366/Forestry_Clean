@@ -88,9 +88,16 @@ def setup_experiment():
 
     os.makedirs(save_dir, exist_ok=True)
 
-    # save config
-    with open(os.path.join(save_dir, "config.json"), "w") as f:
-        json.dump(CFG.__dict__, f, indent=4)
+    # # save config
+    # with open(os.path.join(save_dir, "config.json"), "w") as f:
+    #     json.dump(CFG.__dict__, f, indent=4)
+
+    cfg_dict = {
+        k: v for k, v in CFG.__dict__.items()
+        if not k.startswith("__") and not callable(v)
+    }
+
+    json.dump(cfg_dict, f, indent=4)
 
     print(f"\n📁 Experiment: {exp_name}")
     print(f"📁 Save dir  : {save_dir}")
