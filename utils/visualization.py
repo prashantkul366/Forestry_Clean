@@ -26,16 +26,8 @@ def visualize_predictions(model, val_loader, threshold, cfg, n=4, save_path=None
         prob = prob_maps[i, 0].numpy()
         pred = preds_bin[i, 0].numpy()
 
-        # if preds.shape[-1] != 256:
-            # preds = torch.nn.functional.interpolate(preds, size=(256, 256), mode="bilinear", align_corners=False)
+        
 
-        if pred.shape[-1] != 256:
-            pred = torch.nn.functional.interpolate(
-                torch.tensor(pred)[None, None],
-                size=(256, 256),
-                mode="nearest"
-            )[0,0].numpy()
-            
         inter = (pred * gt).sum()
         dice  = 2 * inter / (pred.sum() + gt.sum() + 1e-6)
 
