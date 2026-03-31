@@ -7,6 +7,7 @@ from models.UNext import UNext
 from models.UCTransNet import UCTransNet
 from models.TransUNet import TransUNet
 from models.SwinUnet import SwinUnet
+from models.ACC_UNet import ACC_UNet
 # from configs.config import UCTransNetConfig
 
 def build_model():
@@ -42,6 +43,13 @@ def build_model():
             n_labels=1,
             img_size=CFG.PATCH_SIZE,
             in_chans=CFG.IN_CHANNELS
+        )
+        
+    elif arch == "acc_unet":
+        m = ACC_UNet(
+            n_channels=CFG.IN_CHANNELS,
+            n_classes=1,
+            n_filts=32
         )
     else:
         raise ValueError(f"Unknown arch: {arch}")
