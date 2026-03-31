@@ -18,7 +18,7 @@ def plot_history(history, cfg=None, save_path=None):
     axes[0,1].plot(epochs, history["train_dice"], label="Train")
     axes[0,1].plot(epochs, history["val_dice"],   label="Val")
     axes[0,1].set_title("Dice"); axes[0,1].legend()
-    axes[0,1].axvline(x=best_epoch, linestyle='--')
+    # axes[0,1].axvline(x=best_epoch, linestyle='--')
 
     # IoU
     axes[0,2].plot(epochs, history["train_iou"], label="Train")

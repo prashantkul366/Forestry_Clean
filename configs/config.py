@@ -4,6 +4,7 @@ import torch
 class CFG:
     BASE = "/content/drive/MyDrive/Prashant/Forestry_data/data_new/dataset_small_bal"
 
+    SEED = 42
     TRAIN_IMGS  = f"{BASE}/train/images"
     TRAIN_MASKS = f"{BASE}/train/masks"
     VAL_IMGS    = f"{BASE}/val/images"
@@ -22,6 +23,9 @@ class CFG:
     IN_CHANNELS  = 4
     ARCHITECTURE = "segformer"
 
+    RESUME = False
+    RESUME_PATH = None  # or specific checkpoint path
+    
     DICE_WEIGHT = 0.5
     BCE_WEIGHT  = 0.5
     FOCAL_GAMMA = 2.0

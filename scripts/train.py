@@ -1,5 +1,6 @@
 import sys
 import os
+from utils.seed import set_seed
 
 # add project root to python path
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -110,6 +111,11 @@ def setup_experiment():
 # 🔹 Data
 # ============================================================
 def build_dataloaders():
+
+    from utils.seed import seed_worker
+
+    g = torch.Generator()
+    g.manual_seed(CFG.SEED)
     print("\n📦 Building datasets...")
 
     print("TRAIN IMG DIR:", CFG.TRAIN_IMGS)
@@ -118,6 +124,7 @@ def build_dataloaders():
     import glob
     print("Num train images:", len(glob.glob(f"{CFG.TRAIN_IMGS}/*.npy")))
     print("Num train masks :", len(glob.glob(f"{CFG.TRAIN_MASKS}/*.npy")))
+
     train_ds = HillshadeDataset(
         CFG.TRAIN_IMGS,
         CFG.TRAIN_MASKS,
@@ -134,23 +141,42 @@ def build_dataloaders():
         road_biased=False,
     )
 
+    # train_loader = DataLoader(
+    #     train_ds,
+    #     batch_size=CFG.BATCH_SIZE,
+    #     shuffle=True,
+    #     num_workers=CFG.NUM_WORKERS,
+    #     pin_memory=True,
+    # )
     train_loader = DataLoader(
         train_ds,
         batch_size=CFG.BATCH_SIZE,
         shuffle=True,
         num_workers=CFG.NUM_WORKERS,
         pin_memory=True,
+        worker_init_fn=seed_worker,
+        generator=g,
     )
 
+    # val_loader = DataLoader(
+    #     val_ds,
+    #     batch_size=CFG.BATCH_SIZE,
+    #     shuffle=False,
+    #     num_workers=CFG.NUM_WORKERS,
+    #     pin_memory=True,
+    # )
     val_loader = DataLoader(
         val_ds,
         batch_size=CFG.BATCH_SIZE,
         shuffle=False,
         num_workers=CFG.NUM_WORKERS,
         pin_memory=True,
+        worker_init_fn=seed_worker,
+        generator=g,
     )
 
     return train_loader, val_loader
+
 
 
 # ============================================================
@@ -221,6 +247,7 @@ def final_evaluation(model, val_loader, save_dir):
 # ============================================================
 def main():
 
+    set_seed(CFG.SEED)
     start_time = time.time()
 
     # 1. setup experiment

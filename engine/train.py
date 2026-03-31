@@ -10,6 +10,31 @@ from utils.threshold import find_best_threshold
 # =============================================================================
 #  CELL 8 — Train / Val loops
 # =============================================================================
+
+def load_checkpoint(model, optimizer, scheduler, cfg, save_dir):
+    ckpt_path = cfg.RESUME_PATH or os.path.join(save_dir, "checkpoint.pth")
+
+    if not os.path.exists(ckpt_path):
+        print("⚠️ No checkpoint found, starting fresh")
+        return 1, 0.0, 0, 0.5, None
+
+    print(f"🔄 Resuming from {ckpt_path}")
+
+    ckpt = torch.load(ckpt_path, map_location=cfg.DEVICE)
+
+    model.load_state_dict(ckpt["model"])
+    optimizer.load_state_dict(ckpt["optimizer"])
+    scheduler.load_state_dict(ckpt["scheduler"])
+
+    return (
+        ckpt["epoch"] + 1,
+        ckpt["best_dice"],
+        ckpt["no_improve"],
+        ckpt["threshold"],
+        ckpt["history"]
+    )
+
+
 # def train_one_epoch(model, loader, loss_fn, optimizer):
 def train_one_epoch(model, loader, loss_fn, optimizer, cfg):
     model.train()
@@ -94,10 +119,23 @@ def train(model, train_loader, val_loader, loss_fn, cfg, save_dir):
         "lr"
     ]}
 
-    best_dice     = 0.0
-    best_epoch    = 0
-    no_improve    = 0
-    threshold     = 0.5
+    start_epoch = 1
+    best_dice = 0.0
+    best_epoch = 0
+    no_improve = 0
+    threshold = 0.5
+
+    if cfg.RESUME:
+        (start_epoch,
+        best_dice,
+        no_improve,
+        threshold,
+        loaded_history) = load_checkpoint(
+            model, optimizer, scheduler, cfg, save_dir
+        )
+
+        if loaded_history is not None:
+            history = loaded_history
 
     # ── header ──────────────────────────────────────────────────────────────
     HDR = (f"\n{'Ep':>4} | {'LR':>8} | "
@@ -107,7 +145,8 @@ def train(model, train_loader, val_loader, loss_fn, cfg, save_dir):
     print(HDR)
     print("-" * len(HDR))
 
-    for epoch in range(1, cfg.EPOCHS + 1):
+    # for epoch in range(1, cfg.EPOCHS + 1):
+    for epoch in range(start_epoch, cfg.EPOCHS + 1):
         t0 = time.time()
 
         # tr_loss, tr_m = train_one_epoch(model, train_loader, loss_fn, optimizer)
@@ -141,17 +180,33 @@ def train(model, train_loader, val_loader, loss_fn, cfg, save_dir):
             best_epoch = epoch
             no_improve = 0
             # ckpt_path  = f"{CFG.SAVE_DIR}/best_model.pth"
-            ckpt_path = os.path.join(save_dir, "best_model.pth")
+            # ckpt_path = os.path.join(save_dir, "best_model.pth")
+            # torch.save({
+            #     "epoch"    : epoch,
+            #     "model"    : model.state_dict(),
+            #     "dice"     : best_dice,
+            #     "threshold": threshold,
+            #     "cfg"      : {
+            #         "arch"      : cfg.ARCHITECTURE,
+            #         "encoder"   : cfg.ENCODER,
+            #         "in_channels": cfg.IN_CHANNELS,
+            #     },
+            # }, ckpt_path)
+            # note = f"★ best  (thr={threshold:.2f})"
+            ckpt_path = os.path.join(save_dir, "checkpoint.pth")
+
             torch.save({
-                "epoch"    : epoch,
-                "model"    : model.state_dict(),
-                "dice"     : best_dice,
+                "epoch": epoch,
+                "model": model.state_dict(),
+                "optimizer": optimizer.state_dict(),
+                "scheduler": scheduler.state_dict(),
+
+                "best_dice": best_dice,
+                "best_epoch": best_epoch,
+                "no_improve": no_improve,
                 "threshold": threshold,
-                "cfg"      : {
-                    "arch"      : cfg.ARCHITECTURE,
-                    "encoder"   : cfg.ENCODER,
-                    "in_channels": cfg.IN_CHANNELS,
-                },
+
+                "history": history,
             }, ckpt_path)
             note = f"★ best  (thr={threshold:.2f})"
         else:
