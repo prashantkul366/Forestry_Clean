@@ -4,7 +4,8 @@ from tqdm import tqdm
 # =============================================================================
 #  CELL 8 — Train / Val loops
 # =============================================================================
-def train_one_epoch(model, loader, loss_fn, optimizer):
+# def train_one_epoch(model, loader, loss_fn, optimizer):
+def train_one_epoch(model, loader, loss_fn, optimizer, cfg):
     model.train()
     total_loss = 0.0
     all_preds, all_targets = [], []
@@ -30,7 +31,8 @@ def train_one_epoch(model, loader, loss_fn, optimizer):
 
 
 @torch.no_grad()
-def validate(model, loader, loss_fn, threshold=0.5):
+# def validate(model, loader, loss_fn, threshold=0.5):
+def validate(model, loader, loss_fn, cfg, threshold=0.5):
     model.eval()
     total_loss = 0.0
     all_preds, all_targets = [], []
@@ -49,7 +51,8 @@ def validate(model, loader, loss_fn, threshold=0.5):
 
 
 @torch.no_grad()
-def find_best_threshold(model, loader):
+# def find_best_threshold(model, loader):
+def find_best_threshold(model, loader, cfg):
     model.eval()
     all_preds, all_targets = [], []
     for imgs, masks in loader:
@@ -101,15 +104,21 @@ def train(model, train_loader, val_loader, loss_fn, cfg, save_dir):
     for epoch in range(1, cfg.EPOCHS + 1):
         t0 = time.time()
 
-        tr_loss, tr_m = train_one_epoch(model, train_loader, loss_fn, optimizer)
-        va_loss, va_m = validate(model, val_loader, loss_fn, threshold)
+        # tr_loss, tr_m = train_one_epoch(model, train_loader, loss_fn, optimizer)
+        # va_loss, va_m = validate(model, val_loader, loss_fn, threshold)
+        tr_loss, tr_m = train_one_epoch(model, train_loader, loss_fn, optimizer, cfg)
+
+        va_loss, va_m = validate(model, val_loader, loss_fn, cfg, threshold)
+
+        
+
         scheduler.step()
 
         lr_now = optimizer.param_groups[0]["lr"]
 
         # tune threshold every 10 epochs
         if epoch % 10 == 0:
-            threshold, _ = find_best_threshold(model, val_loader)
+            threshold, _ = find_best_threshold(model, val_loader, cfg)
 
         # ── log history ───────────────────────────────────────────────────
         history["train_loss"].append(tr_loss)
@@ -160,7 +169,8 @@ def train(model, train_loader, val_loader, loss_fn, cfg, save_dir):
             break
 
     print(f"\n  Best val Dice : {best_dice:.4f}  @ epoch {best_epoch}")
-    print(f"  Checkpoint    : {cfg.SAVE_DIR}/best_model.pth")
+    # print(f"  Checkpoint    : {cfg.SAVE_DIR}/best_model.pth")
+    print(f"Checkpoint    : {os.path.join(save_dir, 'best_model.pth')}")
     return history, threshold
 
 
