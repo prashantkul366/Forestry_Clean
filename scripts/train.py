@@ -112,6 +112,12 @@ def setup_experiment():
 def build_dataloaders():
     print("\n📦 Building datasets...")
 
+    print("TRAIN IMG DIR:", CFG.TRAIN_IMGS)
+    print("TRAIN MASK DIR:", CFG.TRAIN_MASKS)
+
+    import glob
+    print("Num train images:", len(glob.glob(f"{CFG.TRAIN_IMGS}/*.npy")))
+    print("Num train masks :", len(glob.glob(f"{CFG.TRAIN_MASKS}/*.npy")))
     train_ds = HillshadeDataset(
         CFG.TRAIN_IMGS,
         CFG.TRAIN_MASKS,
