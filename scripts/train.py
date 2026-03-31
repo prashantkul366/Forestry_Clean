@@ -250,7 +250,12 @@ def main():
     save_history(history, save_dir)
 
     # 6. plots
-    plot_history(history, save_path=os.path.join(save_dir, "training_curves.png"))
+    # plot_history(history, save_path=os.path.join(save_dir, "training_curves.png"))
+    plot_history(
+        history,
+        cfg=CFG,
+        save_path=os.path.join(save_dir, "training_curves.png")
+    )
 
     # 7. final eval
     best_thr, metrics = final_evaluation(model, val_loader, save_dir)

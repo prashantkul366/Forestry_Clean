@@ -3,7 +3,8 @@
 import matplotlib.pyplot as plt
 
 
-def plot_history(history, save_path=None):
+# def plot_history(history, save_path=None):
+def plot_history(history, cfg=None, save_path=None):
     epochs = range(1, len(history["train_loss"]) + 1)
 
     fig, axes = plt.subplots(2, 3, figsize=(18, 10))
@@ -17,6 +18,7 @@ def plot_history(history, save_path=None):
     axes[0,1].plot(epochs, history["train_dice"], label="Train")
     axes[0,1].plot(epochs, history["val_dice"],   label="Val")
     axes[0,1].set_title("Dice"); axes[0,1].legend()
+    axes[0,1].axvline(x=best_epoch, linestyle='--')
 
     # IoU
     axes[0,2].plot(epochs, history["train_iou"], label="Train")
@@ -42,7 +44,11 @@ def plot_history(history, save_path=None):
         ax.set_xlabel("Epoch")
         ax.grid(alpha=0.3)
 
-    plt.suptitle(f"{CFG.ARCHITECTURE}/{CFG.ENCODER}  —  Training History", fontsize=13)
+    # plt.suptitle(f"{cfg.ARCHITECTURE}/{cfg.ENCODER}  —  Training History", fontsize=13)
+    if cfg is not None:
+        plt.suptitle(f"{cfg.ARCHITECTURE}/{cfg.ENCODER} — Training History", fontsize=13)
+    else:
+        plt.suptitle("Training History", fontsize=13)
     plt.tight_layout()
     # plt.savefig("training_curves.png", dpi=120)
     if save_path is not None:
