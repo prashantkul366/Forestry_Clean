@@ -43,8 +43,24 @@ def train_one_epoch(model, loader, loss_fn, optimizer, cfg):
 
     for imgs, masks in tqdm(loader, desc="  Train", leave=False):
         imgs, masks = imgs.to(cfg.DEVICE), masks.to(cfg.DEVICE)
+        # if cfg.ARCHITECTURE.lower() in cfg.RESIZE_TO_224_MODELS:
+        #     imgs = torch.nn.functional.interpolate(imgs, size=(224, 224), mode="bilinear", align_corners=False)
+        #     masks = torch.nn.functional.interpolate(masks, size=(224, 224), mode="nearest")
+        resize_needed = cfg.ARCHITECTURE.lower() in cfg.RESIZE_TO_224_MODELS
+
+        if resize_needed:
+            imgs_224 = F.interpolate(imgs, size=(224, 224), mode="bilinear", align_corners=False)
+            logits_224 = model(imgs_224)
+            logits = F.interpolate(logits_224, size=(imgs.shape[-2], imgs.shape[-1]),
+                                mode="bilinear", align_corners=False)
+        else:
+            logits = model(imgs)
+
+        if not hasattr(cfg, "DEBUG_PRINTED"):
+            print(f"[DEBUG] resize={resize_needed} | imgs={imgs.shape} | logits={logits.shape} | masks={masks.shape}")
+            cfg.DEBUG_PRINTED = True
+            
         optimizer.zero_grad()
-        logits = model(imgs)
         loss   = loss_fn(logits, masks)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
@@ -70,7 +86,21 @@ def validate(model, loader, loss_fn, cfg, threshold=0.5):
 
     for imgs, masks in tqdm(loader, desc="  Val  ", leave=False):
         imgs, masks = imgs.to(cfg.DEVICE), masks.to(cfg.DEVICE)
-        logits = model(imgs)
+        # if cfg.ARCHITECTURE.lower() in cfg.RESIZE_TO_224_MODELS:
+        #     imgs = torch.nn.functional.interpolate(imgs, size=(224, 224), mode="bilinear", align_corners=False)
+        #     masks = torch.nn.functional.interpolate(masks, size=(224, 224), mode="nearest")
+        # logits = model(imgs)
+        resize_needed = cfg.ARCHITECTURE.lower() in cfg.RESIZE_TO_224_MODELS
+
+        if resize_needed:
+            imgs_224 = F.interpolate(imgs, size=(224, 224), mode="bilinear", align_corners=False)
+            logits_224 = model(imgs_224)
+            logits = F.interpolate(logits_224, size=(imgs.shape[-2], imgs.shape[-1]),
+                                mode="bilinear", align_corners=False)
+        else:
+            logits = model(imgs)
+
+        loss = loss_fn(logits, masks)
         total_loss += loss_fn(logits, masks).item()
         all_preds.append(torch.sigmoid(logits).cpu())
         all_targets.append(masks.cpu())

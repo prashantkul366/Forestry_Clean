@@ -27,7 +27,9 @@ class CFG:
     # ARCHITECTURE = "unext"
     # ARCHITECTURE = "uctransnet"
     ARCHITECTURE = "transunet"
+    # ARCHITECTURE = "swinunet"
 
+    RESIZE_TO_224_MODELS = ["transunet", "swinunet", "uctransnet"]
     RESUME = False
     RESUME_PATH = None  # or specific checkpoint path
     
