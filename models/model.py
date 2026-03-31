@@ -5,7 +5,7 @@ import ml_collections
 
 from models.UNext import UNext
 from models.UCTransNet import UCTransNet
-from nets.TransUNet import TransUNet
+from models.TransUNet import TransUNet
 # from configs.config import UCTransNetConfig
 
 def build_model():
