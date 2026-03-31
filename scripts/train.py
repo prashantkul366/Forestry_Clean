@@ -229,7 +229,8 @@ def final_evaluation(model, val_loader, save_dir):
     preds = torch.cat(all_preds)
     targets = torch.cat(all_targets)
 
-    best_t, _ = find_best_threshold(model, val_loader)
+    # best_t, _ = find_best_threshold(model, val_loader)
+    best_t, _ = find_best_threshold(model, val_loader, CFG)
 
     metrics = compute_metrics((preds > best_t).float(), targets)
 
