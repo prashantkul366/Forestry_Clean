@@ -24,7 +24,8 @@ class CFG:
     ENCODER      = "mit_b2"
     IN_CHANNELS  = 4
     # ARCHITECTURE = "segformer"
-    ARCHITECTURE = "unext"
+    # ARCHITECTURE = "unext"
+    ARCHITECTURE = "uctransnet"
 
     RESUME = False
     RESUME_PATH = None  # or specific checkpoint path
@@ -39,3 +40,6 @@ class CFG:
 
     SAVE_DIR = "/content/drive/MyDrive/Prashant/Forestry_data/CLEAN"
     os.makedirs(SAVE_DIR, exist_ok=True)
+
+
+

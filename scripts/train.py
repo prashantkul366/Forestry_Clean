@@ -88,6 +88,7 @@ def setup_experiment():
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
+    print(f"Model       : {CFG.ARCHITECTURE}")
     exp_name = f"{CFG.ARCHITECTURE}_{CFG.ENCODER}_{timestamp}"
     save_dir = os.path.join(CFG.SAVE_DIR, exp_name)
 
