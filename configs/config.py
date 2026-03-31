@@ -11,7 +11,8 @@ class CFG:
     VAL_MASKS   = f"{BASE}/val/masks"
 
     PATCH_SIZE  = 256
-    BATCH_SIZE  = 8
+    # BATCH_SIZE  = 8
+    BATCH_SIZE  = 4
     NUM_WORKERS = 2
     EPOCHS      = 200
     # EPOCHS      = 10
