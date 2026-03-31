@@ -30,5 +30,5 @@ class CFG:
     ROAD_RATIO      = 0.70
     ROAD_MIN_PIXELS = 30
 
-    SAVE_DIR = "/content/drive/MyDrive/Prashant/Forestry_data/Claude"
+    SAVE_DIR = "/content/drive/MyDrive/Prashant/Forestry_data/CLEAN"
     os.makedirs(SAVE_DIR, exist_ok=True)

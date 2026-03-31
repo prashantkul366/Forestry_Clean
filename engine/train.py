@@ -161,4 +161,4 @@ def train(model, train_loader, val_loader, loss_fn, save_dir):
     return history, threshold
 
 
-history, best_threshold = train(model, train_loader, val_loader, loss_fn)
+# history, best_threshold = train(model, train_loader, val_loader, loss_fn)
