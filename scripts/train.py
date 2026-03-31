@@ -242,7 +242,8 @@ def main():
         train_loader,
         val_loader,
         loss_fn,
-        save_dir=save_dir,   # 🔥 IMPORTANT CHANGE
+        cfg=CFG,
+        save_dir=save_dir
     )
 
     # 5. save history

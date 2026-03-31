@@ -8,7 +8,7 @@ def train_one_epoch(model, loader, loss_fn, optimizer):
     all_preds, all_targets = [], []
 
     for imgs, masks in tqdm(loader, desc="  Train", leave=False):
-        imgs, masks = imgs.to(CFG.DEVICE), masks.to(CFG.DEVICE)
+        imgs, masks = imgs.to(cfg.DEVICE), masks.to(cfg.DEVICE)
         optimizer.zero_grad()
         logits = model(imgs)
         loss   = loss_fn(logits, masks)
@@ -34,7 +34,7 @@ def validate(model, loader, loss_fn, threshold=0.5):
     all_preds, all_targets = [], []
 
     for imgs, masks in tqdm(loader, desc="  Val  ", leave=False):
-        imgs, masks = imgs.to(CFG.DEVICE), masks.to(CFG.DEVICE)
+        imgs, masks = imgs.to(cfg.DEVICE), masks.to(cfg.DEVICE)
         logits = model(imgs)
         total_loss += loss_fn(logits, masks).item()
         all_preds.append(torch.sigmoid(logits).cpu())
@@ -51,7 +51,7 @@ def find_best_threshold(model, loader):
     model.eval()
     all_preds, all_targets = [], []
     for imgs, masks in loader:
-        logits = model(imgs.to(CFG.DEVICE))
+        logits = model(imgs.to(cfg.DEVICE))
         all_preds.append(torch.sigmoid(logits).cpu())
         all_targets.append(masks.cpu())
     preds   = torch.cat(all_preds)
@@ -67,11 +67,12 @@ def find_best_threshold(model, loader):
 
 
 # def train(model, train_loader, val_loader, loss_fn):
-def train(model, train_loader, val_loader, loss_fn, save_dir):
+# def train(model, train_loader, val_loader, loss_fn, save_dir):
+def train(model, train_loader, val_loader, loss_fn, cfg, save_dir):
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=CFG.LR)
+    optimizer = torch.optim.Adam(model.parameters(), lr=cfg.LR)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-                    optimizer, T_max=CFG.EPOCHS, eta_min=1e-6)
+                    optimizer, T_max=cfg.EPOCHS, eta_min=1e-6)
 
     history = {k: [] for k in [
         "train_loss", "val_loss",
@@ -95,7 +96,7 @@ def train(model, train_loader, val_loader, loss_fn, save_dir):
     print(HDR)
     print("-" * len(HDR))
 
-    for epoch in range(1, CFG.EPOCHS + 1):
+    for epoch in range(1, cfg.EPOCHS + 1):
         t0 = time.time()
 
         tr_loss, tr_m = train_one_epoch(model, train_loader, loss_fn, optimizer)
@@ -130,16 +131,16 @@ def train(model, train_loader, val_loader, loss_fn, save_dir):
                 "dice"     : best_dice,
                 "threshold": threshold,
                 "cfg"      : {
-                    "arch"      : CFG.ARCHITECTURE,
-                    "encoder"   : CFG.ENCODER,
-                    "in_channels": CFG.IN_CHANNELS,
+                    "arch"      : cfg.ARCHITECTURE,
+                    "encoder"   : cfg.ENCODER,
+                    "in_channels": cfg.IN_CHANNELS,
                 },
             }, ckpt_path)
             note = f"★ best  (thr={threshold:.2f})"
         else:
             no_improve += 1
-            if no_improve >= CFG.PATIENCE:
-                note = f"EARLY STOP (no improve {CFG.PATIENCE} epochs)"
+            if no_improve >= cfg.PATIENCE:
+                note = f"EARLY STOP (no improve {cfg.PATIENCE} epochs)"
 
         elapsed = time.time() - t0
         print(
@@ -152,12 +153,12 @@ def train(model, train_loader, val_loader, loss_fn, save_dir):
             f"{note}  [{elapsed:.0f}s]"
         )
 
-        if no_improve >= CFG.PATIENCE:
+        if no_improve >= cfg.PATIENCE:
             print(f"\n  Stopped at epoch {epoch}. Best val Dice={best_dice:.4f} @ epoch {best_epoch}")
             break
 
     print(f"\n  Best val Dice : {best_dice:.4f}  @ epoch {best_epoch}")
-    print(f"  Checkpoint    : {CFG.SAVE_DIR}/best_model.pth")
+    print(f"  Checkpoint    : {cfg.SAVE_DIR}/best_model.pth")
     return history, threshold
 
 
