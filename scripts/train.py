@@ -294,6 +294,7 @@ def main():
         model,
         val_loader,
         threshold=best_thr,
+        cfg=CFG,
         save_path=os.path.join(save_dir, "predictions.png"),
     )
 
