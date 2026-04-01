@@ -842,19 +842,9 @@ class SwinUnet(nn.Module):
             x = self.input_adapter(x)
         elif x.size(1) == 1:
             x = x.repeat(1, 3, 1, 1)
-
-        # ── resize to 224 for SwinTransformer compatibility ──
-        _, _, H, W = x.shape
-        if H != 224 or W != 224:
-            x = F.interpolate(x, size=(224, 224), mode="bilinear", align_corners=False)
-
         logits = self.swin_unet(x)
-
-        # ── resize output back to original resolution ──
-        if H != 224 or W != 224:
-            logits = F.interpolate(logits, size=(H, W), mode="bilinear", align_corners=False)
-
         return logits
+    
     def load_from(self):
         pretrained_path = 'pretrained_ckpt/swin_tiny_patch4_window7_224.pth'
         if pretrained_path is not None:
