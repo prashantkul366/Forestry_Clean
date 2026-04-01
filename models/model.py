@@ -11,6 +11,8 @@ from models.ACC_UNet import ACC_UNet
 from models.H_vmunet import H_vmunet
 from models.u_kan import UKAN
 from models.lddcm import LDDCM_Net
+from models.DSCNet import DSCNet
+
 # from configs.config import UCTransNetConfig
 
 def build_model():
@@ -71,6 +73,15 @@ def build_model():
         )
     elif arch == "lddcm":
         return LDDCM_Net(n_channels=CFG.IN_CHANNELS, n_classes=1).to(CFG.DEVICE)
+    elif arch == "dscnet":
+        m = DSCNet(
+            n_channels=CFG.IN_CHANNELS,
+            n_classes=1,
+            kernel_size=9,       
+            extend_scope=1.0,  
+            if_offset=True,      
+            number=8,            
+        )
     else:
         raise ValueError(f"Unknown arch: {arch}")
     return m.to(CFG.DEVICE)

@@ -31,13 +31,14 @@ class CFG:
     # ARCHITECTURE = "unext"
     # ARCHITECTURE = "uctransnet"
     # ARCHITECTURE = "transunet"
-    ARCHITECTURE = "swinunet"
+    # ARCHITECTURE = "swinunet"
     # ARCHITECTURE = "acc_unet"
     # ARCHITECTURE = "h_vmunet"
     # ARCHITECTURE = "egeunet"
     # ARCHITECTURE = "samseg" 
     # ARCHITECTURE = "ukan"
     # ARCHITECTURE = "lddcm"
+    ARCHITECTURE = "dscnet"
 
     RESUME = False
     RESUME_PATH = None  # or specific checkpoint path
