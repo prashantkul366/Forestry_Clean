@@ -1,4 +1,5 @@
 import os
+from sympy import content
 import torch
 
 class CFG:
@@ -26,6 +27,8 @@ class CFG:
     # PATIENCE = 5
 
     ENCODER      = "mit_b2"
+    SAM_CHECKPOINT  = "content/drive/MyDrive/Prashant/Pretrain/sam_vit_b_01ec64.pth.2"
+    SAM_MODEL_TYPE  = "vit_b"
     IN_CHANNELS  = 4
     # ARCHITECTURE = "segformer"
     # ARCHITECTURE = "unext"
@@ -39,7 +42,8 @@ class CFG:
     # ARCHITECTURE = "ukan"
     # ARCHITECTURE = "lddcm"
     # ARCHITECTURE = "dscnet"
-    ARCHITECTURE = "fr_unet"
+    # ARCHITECTURE = "fr_unet"
+    ARCHITECTURE    = "sam_adapter"
 
     RESUME = False
     RESUME_PATH = None  # or specific checkpoint path
