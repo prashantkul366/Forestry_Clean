@@ -69,7 +69,7 @@ def build_model():
             n_channels=CFG.IN_CHANNELS,
             img_size=CFG.PATCH_SIZE
         )
-    if arch == "lddcm":
+    elif arch == "lddcm":
         return LDDCM_Net(n_channels=CFG.IN_CHANNELS, n_classes=1).to(CFG.DEVICE)
     else:
         raise ValueError(f"Unknown arch: {arch}")
