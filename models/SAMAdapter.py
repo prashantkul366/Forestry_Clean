@@ -336,9 +336,13 @@ class SAMAdapterSeg(nn.Module):
 
         return sam
 
+    # def _get_dense_pe(self) -> torch.Tensor:
+    #     """Positional encoding for the image embedding grid."""
+    #     return self.pe_layer(self.image_embedding_size).unsqueeze(0)
     def _get_dense_pe(self) -> torch.Tensor:
         """Positional encoding for the image embedding grid."""
-        return self.pe_layer(self.image_embedding_size).unsqueeze(0)
+        s = self.image_embedding_size
+        return self.pe_layer((s, s)).unsqueeze(0)
 
     # ── Forward ───────────────────────────────────────────────────────────────
 
