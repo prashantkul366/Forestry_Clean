@@ -399,13 +399,37 @@ class SAMAdapterSeg(nn.Module):
                     self.image_embedding_size)
         )
 
-        low_res_masks, _ = self.mask_decoder(
-            image_embeddings=image_embeddings,
-            image_pe=self._get_dense_pe(),
-            sparse_prompt_embeddings=sparse_embeddings,
-            dense_prompt_embeddings=dense_embeddings,
-            multimask_output=False,
-        )
+        # low_res_masks, _ = self.mask_decoder(
+        #     image_embeddings=image_embeddings,
+        #     image_pe=self._get_dense_pe(),
+        #     sparse_prompt_embeddings=sparse_embeddings,
+        #     dense_prompt_embeddings=dense_embeddings,
+        #     multimask_output=False,
+        # )
+        # SAM's mask_decoder uses repeat_interleave internally and is designed
+        # for bs=1. Run per image to avoid the B×B expansion mismatch.
+        all_masks = []
+        for i in range(B):
+            sparse_i = torch.empty(
+                (1, 0, self.prompt_embed_dim), device=x.device
+            )
+            dense_i = (
+                self.no_mask_embed.weight
+                .reshape(1, -1, 1, 1)
+                .expand(1, -1,
+                        self.image_embedding_size,
+                        self.image_embedding_size)
+            )
+            m, _ = self.mask_decoder(
+                image_embeddings=image_embeddings[i : i + 1],
+                image_pe=self._get_dense_pe(),
+                sparse_prompt_embeddings=sparse_i,
+                dense_prompt_embeddings=dense_i,
+                multimask_output=False,
+            )
+            all_masks.append(m)
+
+        low_res_masks = torch.cat(all_masks, dim=0)   # (B, 1, H/4, W/4)
         # low_res_masks: (B, 1, img_size/4, img_size/4)
 
         # ── Upsample to original input resolution ────────────────────────────
