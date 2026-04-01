@@ -10,6 +10,7 @@ from models.SwinUnet import SwinUnet
 from models.ACC_UNet import ACC_UNet
 from models.H_vmunet import H_vmunet
 from models.u_kan import UKAN
+from models.lddcm import LDDCM_Net
 # from configs.config import UCTransNetConfig
 
 def build_model():
@@ -68,6 +69,8 @@ def build_model():
             n_channels=CFG.IN_CHANNELS,
             img_size=CFG.PATCH_SIZE
         )
+    if arch == "lddcm":
+        return LDDCM_Net(n_channels=CFG.IN_CHANNELS, n_classes=1).to(CFG.DEVICE)
     else:
         raise ValueError(f"Unknown arch: {arch}")
     return m.to(CFG.DEVICE)
