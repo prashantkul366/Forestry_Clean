@@ -16,7 +16,8 @@ class CFG:
     IMG_SIZE   = 256
     # IMG_SIZE   = 224 
     # BATCH_SIZE  = 8
-    BATCH_SIZE  = 4
+    # BATCH_SIZE  = 4
+    BATCH_SIZE  = 2
     NUM_WORKERS = 2
     EPOCHS      = 200
     # EPOCHS      = 10
