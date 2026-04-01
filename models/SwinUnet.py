@@ -800,11 +800,23 @@ class SwinTransformerSys(nn.Module):
 #     def forward(self, x):
 #         return self.proj(x)
   
+# class InputAdapter(nn.Module):
+#     def __init__(self, in_ch=4):
+#         super().__init__()
+#         self.proj = nn.Conv2d(in_ch, 3, kernel_size=1)
+
+#     def forward(self, x):
+#         return self.proj(x)
+
 class InputAdapter(nn.Module):
     def __init__(self, in_ch=4):
         super().__init__()
-        self.proj = nn.Conv2d(in_ch, 3, kernel_size=1)
-
+        self.proj = nn.Sequential(
+            nn.Conv2d(in_ch, 16, 3, padding=1, bias=False),
+            nn.BatchNorm2d(16),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(16, 3, 1, bias=False),
+        )
     def forward(self, x):
         return self.proj(x)
 
