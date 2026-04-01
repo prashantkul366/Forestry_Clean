@@ -12,6 +12,8 @@ from models.H_vmunet import H_vmunet
 from models.u_kan import UKAN
 from models.lddcm import LDDCM_Net
 from models.DSCNet import DSCNet
+from models.FR_UNet import FR_UNet
+
 
 # from configs.config import UCTransNetConfig
 
@@ -82,9 +84,19 @@ def build_model():
             if_offset=True,      
             number=8,            
         )
+    elif arch == "fr_unet":
+        m = FR_UNet(
+            num_channels=CFG.IN_CHANNELS,   # 4
+            num_classes=1,
+            feature_scale=2,    
+            dropout=0.2,
+            fuse=True,          
+            out_ave=True,      
+        )
     else:
         raise ValueError(f"Unknown arch: {arch}")
     return m.to(CFG.DEVICE)
+
 
 
 
