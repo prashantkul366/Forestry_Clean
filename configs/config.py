@@ -38,8 +38,8 @@ class CFG:
     # ARCHITECTURE = "samseg" 
     # ARCHITECTURE = "ukan"
     # ARCHITECTURE = "lddcm"
-    ARCHITECTURE = "dscnet"
-    # ARCHITECTURE = "fr_unet"
+    # ARCHITECTURE = "dscnet"
+    ARCHITECTURE = "fr_unet"
 
     RESUME = False
     RESUME_PATH = None  # or specific checkpoint path
