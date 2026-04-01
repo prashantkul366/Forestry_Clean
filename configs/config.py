@@ -28,7 +28,7 @@ class CFG:
     # PATIENCE = 5
 
     ENCODER      = "mit_b2"
-    SAM_CHECKPOINT  = "content/drive/MyDrive/Prashant/Pretrain/sam_vit_b_01ec64.pth.2"
+    SAM_CHECKPOINT  = "content/drive/MyDrive/Prashant/Pretrain/sam_vit_b_01ec64.pth"
     SAM_MODEL_TYPE  = "vit_b"
     IN_CHANNELS  = 4
     # ARCHITECTURE = "segformer"
