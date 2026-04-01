@@ -13,6 +13,7 @@ from models.u_kan import UKAN
 from models.lddcm import LDDCM_Net
 from models.DSCNet import DSCNet
 from models.FR_UNet import FR_UNet
+from models.SAMAdapter import SAMAdapterSeg
 
 
 # from configs.config import UCTransNetConfig
@@ -92,6 +93,15 @@ def build_model():
             dropout=0.2,
             fuse=True,          
             out_ave=True,      
+        )
+    elif arch == "sam_adapter":
+        m = SAMAdapterSeg(
+            n_channels=CFG.IN_CHANNELS,        # 4
+            n_classes=1,
+            checkpoint=CFG.SAM_CHECKPOINT,
+            model_type=CFG.SAM_MODEL_TYPE,
+            adapter_hidden=32,                 # paper default
+            img_size=1024,                     # or 256 for faster training
         )
     else:
         raise ValueError(f"Unknown arch: {arch}")
