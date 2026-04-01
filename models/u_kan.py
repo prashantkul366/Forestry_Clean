@@ -403,7 +403,7 @@ class UKAN(nn.Module):
         out = F.relu(F.interpolate(self.decoder5(out),scale_factor=(2,2),mode ='bilinear'))
 
         # return self.final(out)
-        # out = self.final(out)
+        out = self.final(out)
         # if out.shape[1] == 1:
         #     out = torch.sigmoid(out)  # For binary segmentation
         # return out
