@@ -28,10 +28,10 @@ class CFG:
     PATIENCE = 50
     # PATIENCE = 5
 
-    # ENCODER      = "mit_b2"
-    ENCODER      = "resnet34"        # or "mit_b2" for SegFormer
+    ENCODER      = "mit_b2"
+    # ENCODER      = "resnet34"        # or "mit_b2" for SegFormer
 
-    
+
 
     # SAM_CHECKPOINT  = "content/drive/MyDrive/Prashant/Pretrain/sam_vit_b_01ec64.pth"
     SAM_CHECKPOINT  = "/content/drive/MyDrive/Prashant/Pretrain/sam_vit_b_01ec64.pth"
@@ -39,8 +39,10 @@ class CFG:
     IN_CHANNELS  = 4
 
 
-    ARCHITECTURE = "unetplusplus" 
-    # ARCHITECTURE = "segformer"
+
+    # ARCHITECTURE = "unet"
+    # ARCHITECTURE = "unetplusplus" 
+    ARCHITECTURE = "segformer"
     # ARCHITECTURE = "unext"
     # ARCHITECTURE = "uctransnet"
     # ARCHITECTURE = "transunet"
