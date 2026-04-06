@@ -28,8 +28,8 @@ class CFG:
     PATIENCE = 50
     # PATIENCE = 5
 
-    ENCODER      = "mit_b2"
-    # ENCODER      = "resnet34"        # or "mit_b2" for SegFormer
+    # ENCODER      = "mit_b2"
+    ENCODER      = "resnet34"        # or "mit_b2" for SegFormer
 
 
 
@@ -40,9 +40,9 @@ class CFG:
 
 
 
-    # ARCHITECTURE = "unet"
+    ARCHITECTURE = "unet"
     # ARCHITECTURE = "unetplusplus" 
-    ARCHITECTURE = "segformer"
+    # ARCHITECTURE = "segformer"
     # ARCHITECTURE = "unext"
     # ARCHITECTURE = "uctransnet"
     # ARCHITECTURE = "transunet"
