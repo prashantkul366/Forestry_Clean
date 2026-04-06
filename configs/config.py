@@ -20,7 +20,7 @@ class CFG:
     # BATCH_SIZE  = 4
     # BATCH_SIZE  = 2
     NUM_WORKERS = 2
-    EPOCHS      = 100
+    EPOCHS      = 1000
     # EPOCHS      = 10
     LR          = 3e-4
     DEVICE      = "cuda" if torch.cuda.is_available() else "cpu"
