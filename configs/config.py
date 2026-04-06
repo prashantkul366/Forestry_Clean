@@ -16,11 +16,11 @@ class CFG:
     PATCH_SIZE = 256
     IMG_SIZE   = 256
     # IMG_SIZE   = 224 
-    # BATCH_SIZE  = 8
+    BATCH_SIZE  = 8
     # BATCH_SIZE  = 4
-    BATCH_SIZE  = 2
+    # BATCH_SIZE  = 2
     NUM_WORKERS = 2
-    EPOCHS      = 200
+    EPOCHS      = 100
     # EPOCHS      = 10
     LR          = 3e-4
     DEVICE      = "cuda" if torch.cuda.is_available() else "cpu"
@@ -30,7 +30,7 @@ class CFG:
 
     # ENCODER      = "mit_b2"
     ENCODER      = "resnet34"        # or "mit_b2" for SegFormer
-    
+
     # SAM_CHECKPOINT  = "content/drive/MyDrive/Prashant/Pretrain/sam_vit_b_01ec64.pth"
     SAM_CHECKPOINT  = "/content/drive/MyDrive/Prashant/Pretrain/sam_vit_b_01ec64.pth"
     SAM_MODEL_TYPE  = "vit_b"
