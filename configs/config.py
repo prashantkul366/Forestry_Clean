@@ -40,8 +40,8 @@ class CFG:
 
 
 
-    ARCHITECTURE = "unet"
-    # ARCHITECTURE = "unetplusplus" 
+    # ARCHITECTURE = "unet"
+    ARCHITECTURE = "unetplusplus" 
     # ARCHITECTURE = "segformer"
     # ARCHITECTURE = "unext"
     # ARCHITECTURE = "uctransnet"
