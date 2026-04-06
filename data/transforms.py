@@ -31,8 +31,11 @@ def get_transforms(phase):
             A.HorizontalFlip(p=0.5),
             A.VerticalFlip(p=0.5),
             A.RandomRotate90(p=0.5),
-            A.GaussNoise(p=0.3),
-            A.RandomBrightnessContrast(p=0.3),
+            # A.GaussNoise(p=0.3),
+            A.GaussNoise(var_limit=(0.001, 0.005), p=0.3),
+            # A.RandomBrightnessContrast(p=0.3),
+            A.CoarseDropout(max_holes=4, max_height=32,
+            max_width=32, fill_value=0, p=0.2),
             ToTensorV2(transpose_mask=False),
         ])
     else:
