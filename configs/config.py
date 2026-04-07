@@ -56,8 +56,8 @@ class CFG:
     # ARCHITECTURE = "dscnet"
     # ARCHITECTURE = "fr_unet"
     # ARCHITECTURE    = "sam_adapter"
-    ARCHITECTURE = "axnet"
-    # ARCHITECTURE = "c2s_roadnet"   
+    # ARCHITECTURE = "axnet"
+    ARCHITECTURE = "c2s_roadnet"   
 
     RESUME = False
     RESUME_PATH = None  # or specific checkpoint path
