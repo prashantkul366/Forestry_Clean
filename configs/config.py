@@ -28,8 +28,8 @@ class CFG:
     PATIENCE = 50
     # PATIENCE = 5
 
-    ENCODER      = "mit_b2"
-    # ENCODER      = "resnet34"        # or "mit_b2" for SegFormer
+    # ENCODER      = "mit_b2"
+    ENCODER      = "resnet34"        # or "mit_b2" for SegFormer
 
 
 
@@ -56,6 +56,7 @@ class CFG:
     # ARCHITECTURE = "dscnet"
     # ARCHITECTURE = "fr_unet"
     # ARCHITECTURE    = "sam_adapter"
+    ARCHITECTURE = "AxNet"   
 
     RESUME = False
     RESUME_PATH = None  # or specific checkpoint path

@@ -1,7 +1,8 @@
 import segmentation_models_pytorch as smp
 from configs.config import CFG
 import ml_collections
-
+import torch.nn as nn
+import torch
 
 from models.UNext import UNext
 from models.UCTransNet import UCTransNet
@@ -14,6 +15,7 @@ from models.lddcm import LDDCM_Net
 from models.DSCNet import DSCNet
 from models.FR_UNet import FR_UNet
 from models.SAMAdapter import SAMAdapterSeg
+from models.AxNet import OurNet
 
 
 # from configs.config import UCTransNetConfig
@@ -103,6 +105,20 @@ def build_model():
             adapter_hidden=32,                 # paper default
             img_size=1024,                     # or 256 for faster training
         )
+    elif arch == "AxNet":
+        m = OurNet(n_classes=1, num_heads=8, pretrained=True)
+        if CFG.IN_CHANNELS != 3:
+            old_conv = m.enc0[0]
+            new_conv = nn.Conv2d(
+                CFG.IN_CHANNELS, 64,
+                kernel_size=7, stride=2, padding=3, bias=False
+            )
+            with torch.no_grad():
+                new_conv.weight[:, :3] = old_conv.weight   # copy RGB weights
+                nn.init.kaiming_normal_(                    # init 4th channel
+                    new_conv.weight[:, 3:], mode='fan_out', nonlinearity='relu'
+                )
+            m.enc0[0] = new_conv
     else:
         raise ValueError(f"Unknown arch: {arch}")
     return m.to(CFG.DEVICE)
