@@ -56,7 +56,7 @@ class CFG:
     # ARCHITECTURE = "dscnet"
     # ARCHITECTURE = "fr_unet"
     # ARCHITECTURE    = "sam_adapter"
-    ARCHITECTURE = "AxNet"
+    ARCHITECTURE = "axnet"
     # ARCHITECTURE = "c2s_roadnet"   
 
     RESUME = False
