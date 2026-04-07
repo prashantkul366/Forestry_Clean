@@ -15,7 +15,8 @@ from models.lddcm import LDDCM_Net
 from models.DSCNet import DSCNet
 from models.FR_UNet import FR_UNet
 from models.SAMAdapter import SAMAdapterSeg
-from models.AxNet import OurNet
+from models.AxNet import axnet
+from models.c2s_roadnet import C2SRoadNet
 
 
 # from configs.config import UCTransNetConfig
@@ -105,8 +106,8 @@ def build_model():
             adapter_hidden=32,                 # paper default
             img_size=1024,                     # or 256 for faster training
         )
-    elif arch == "AxNet":
-        m = OurNet(n_classes=1, num_heads=8, pretrained=True)
+    elif arch == "axnet":
+        m = axnet(n_classes=1, num_heads=8, pretrained=True)
         if CFG.IN_CHANNELS != 3:
             old_conv = m.enc0[0]
             new_conv = nn.Conv2d(
@@ -119,6 +120,23 @@ def build_model():
                     new_conv.weight[:, 3:], mode='fan_out', nonlinearity='relu'
                 )
             m.enc0[0] = new_conv
+
+    elif arch == "c2s_roadnet":
+        m = C2SRoadNet(n_classes=1)
+
+        # Patch enc0's first conv from 3→4 channels
+        if CFG.IN_CHANNELS != 3:
+            old_conv = m.enc0.net[0]   # first Conv2d in ConvBlock
+            new_conv = nn.Conv2d(
+                CFG.IN_CHANNELS, 64,
+                kernel_size=3, padding=1, bias=False
+            )
+            with torch.no_grad():
+                new_conv.weight[:, :3] = old_conv.weight
+                nn.init.kaiming_normal_(
+                    new_conv.weight[:, 3:], mode='fan_out', nonlinearity='relu'
+                )
+            m.enc0.net[0] = new_conv
     else:
         raise ValueError(f"Unknown arch: {arch}")
     return m.to(CFG.DEVICE)

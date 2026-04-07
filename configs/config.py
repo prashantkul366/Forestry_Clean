@@ -45,7 +45,7 @@ class CFG:
     # ARCHITECTURE = "segformer"
     # ARCHITECTURE = "unext"
     # ARCHITECTURE = "uctransnet"
-    ARCHITECTURE = "transunet"
+    # ARCHITECTURE = "transunet"
     # ARCHITECTURE = "swinunet"
     # ARCHITECTURE = "acc_unet"
     # ARCHITECTURE = "h_vmunet"
@@ -56,7 +56,8 @@ class CFG:
     # ARCHITECTURE = "dscnet"
     # ARCHITECTURE = "fr_unet"
     # ARCHITECTURE    = "sam_adapter"
-    ARCHITECTURE = "AxNet"   
+    ARCHITECTURE = "AxNet"
+    # ARCHITECTURE = "c2s_roadnet"   
 
     RESUME = False
     RESUME_PATH = None  # or specific checkpoint path
@@ -71,6 +72,7 @@ class CFG:
     ROAD_MIN_PIXELS = 30
 
     SAVE_DIR = "/content/drive/MyDrive/Prashant/Forestry_data/CLEAN_ORIGINAL"
+    # SAVE_DIR = "/content/drive/MyDrive/Prashant/Forestry_data/CLEAN"
     os.makedirs(SAVE_DIR, exist_ok=True)
 
 

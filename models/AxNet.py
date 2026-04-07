@@ -303,7 +303,7 @@ class DecoderBlock(nn.Module):
 #  Full OurNet
 # ─────────────────────────────────────────────────────────────────────────────
 
-class OurNet(nn.Module):
+class axnet(nn.Module):
     """
     Road extraction model with Channel Attention and Multilayer Axial Transformer.
 
@@ -456,7 +456,7 @@ if __name__ == '__main__':
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print(f'Device: {device}\n')
 
-    model = OurNet(n_classes=1, num_heads=8, pretrained=False).to(device)
+    model = axnet(n_classes=1, num_heads=8, pretrained=False).to(device)
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f'Trainable params : {n_params / 1e6:.2f} M  '
           f'(paper reports ~47.12 M with pretrained backbone)')
