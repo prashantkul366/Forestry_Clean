@@ -246,7 +246,8 @@ class MLAF(nn.Module):
         B, C, H, W = feat_list[0].shape
 
         # Q̂: (B, 3, C*H*W)  — each feature map as one "token"
-        tokens = torch.stack([f.flatten(2) for f in feat_list], dim=1)
+        # tokens = torch.stack([f.flatten(2) for f in feat_list], dim=1)
+        tokens = torch.stack([f.flatten(1) for f in feat_list], dim=1)
 
         Q = tokens                      # (B, 3,   CHW)
         K = tokens.transpose(1, 2)      # (B, CHW, 3)
