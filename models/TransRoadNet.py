@@ -621,6 +621,7 @@ class TransRoadNet(nn.Module):
         d = self.dec3(d,   ssi2)   # up (H/4→H/2),  cat SSI2    → (B,  64, H/2)
         d = F.interpolate(d, scale_factor=2, mode='bilinear', align_corners=False)
         d = self.dec2(d)           #                               (B,  32, H)
+        d = F.interpolate(d, scale_factor=2, mode='bilinear', align_corners=False)  # ← add this
 
         return self.head(d)        # (B, n_classes, H, W)
 
