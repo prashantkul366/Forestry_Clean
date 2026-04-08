@@ -17,6 +17,7 @@ from models.FR_UNet import FR_UNet
 from models.SAMAdapter import SAMAdapterSeg
 from models.AxNet import axnet
 from models.c2s_roadnet import C2SRoadNet
+from models.TransRoadNet import TransRoadNet
 
 
 # from configs.config import UCTransNetConfig
@@ -137,6 +138,23 @@ def build_model():
                     new_conv.weight[:, 3:], mode='fan_out', nonlinearity='relu'
                 )
             m.enc0.net[0] = new_conv
+
+    elif arch == "transroadnet":
+        m = TransRoadNet(n_classes=1, pretrained=True)
+
+        # patch stem's first conv from 3 → 4 channels
+        if CFG.IN_CHANNELS != 3:
+            old_conv = m.stem[0]          # Conv2d(3, 64, kernel=7, stride=2, pad=3)
+            new_conv = nn.Conv2d(
+                CFG.IN_CHANNELS, 64,
+                kernel_size=7, stride=2, padding=3, bias=False
+            )
+            with torch.no_grad():
+                new_conv.weight[:, :3] = old_conv.weight   # copy RGB weights
+                nn.init.kaiming_normal_(                    # init 4th channel
+                    new_conv.weight[:, 3:], mode='fan_out', nonlinearity='relu'
+                )
+            m.stem[0] = new_conv
     else:
         raise ValueError(f"Unknown arch: {arch}")
     return m.to(CFG.DEVICE)
