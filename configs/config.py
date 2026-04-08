@@ -16,8 +16,8 @@ class CFG:
     PATCH_SIZE = 256
     IMG_SIZE   = 256
     # IMG_SIZE   = 224 
-    BATCH_SIZE  = 8
-    # BATCH_SIZE  = 4
+    # BATCH_SIZE  = 8
+    BATCH_SIZE  = 4
     # BATCH_SIZE  = 2
     NUM_WORKERS = 2
     EPOCHS      = 1000
@@ -47,7 +47,7 @@ class CFG:
     # ARCHITECTURE = "uctransnet"
     # ARCHITECTURE = "transunet"
     # ARCHITECTURE = "swinunet"
-    # ARCHITECTURE = "acc_unet"
+    ARCHITECTURE = "acc_unet"
     # ARCHITECTURE = "h_vmunet"
     # ARCHITECTURE = "egeunet"
     # ARCHITECTURE = "samseg" 
@@ -57,7 +57,7 @@ class CFG:
     # ARCHITECTURE = "fr_unet"
     # ARCHITECTURE    = "sam_adapter"
     # ARCHITECTURE = "axnet"
-    ARCHITECTURE = "c2s_roadnet"   
+    # ARCHITECTURE = "c2s_roadnet"   
 
     RESUME = False
     RESUME_PATH = None  # or specific checkpoint path
