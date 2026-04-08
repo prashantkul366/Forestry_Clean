@@ -505,7 +505,7 @@ class TransRoadNet(nn.Module):
     def __init__(
         self,
         n_classes:   int  = 1,
-        swin_heads:  int  = 3,
+        swin_heads:  int  = 8,
         swin_layers: int  = 2,
         swin_window: int  = 4,
         pretrained:  bool = True,
@@ -528,10 +528,14 @@ class TransRoadNet(nn.Module):
         ch = dict(e2=64, e3=128, e4=256, e5=512)
 
         # ── CIEM (PA + Swin on E4) ───────────────────────────────────────────
-        self.ciem  = CIEM(channels=ch['e4'],
-                          num_heads=swin_heads,
-                          num_layers=swin_layers,
-                          window_sz=swin_window)
+        # self.ciem  = CIEM(channels=ch['e4'],
+        #                   num_heads=swin_heads,
+        #                   num_layers=swin_layers,
+        #                   window_sz=swin_window)
+        self.ciem = CIEM(channels=ch['e4'],
+                 num_heads=8,            # 256÷8=32  ✓
+                 num_layers=swin_layers,
+                 window_sz=swin_window)
 
         # ── FFM (FCI + E5 → FF) ──────────────────────────────────────────────
         ff_out_ch  = 256
