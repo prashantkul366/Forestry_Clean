@@ -451,40 +451,80 @@ class SS2D(nn.Module):
         return out_y[:, 0], inv_y[:, 0], wh_y, invwh_y
 
 
+    # @staticmethod
+    # def _pure_pytorch_scan(u, dts, As, Bs, Cs, Ds, dt_bias, K):
+    #     """
+    #     Pure PyTorch selective scan — no mamba_ssm / causal_conv1d needed.
+    #     u, dts : (B, K*D, L)
+    #     As     : (K*D, N)
+    #     Bs, Cs : (B, K, N, L)
+    #     Ds     : (K*D,)
+    #     """
+    #     B_batch, KD, L = u.shape
+    #     N = As.shape[-1]
+
+    #     # apply softplus + bias to delta
+    #     dts = F.softplus(dts + dt_bias.unsqueeze(-1))  # (B, KD, L)
+
+    #     delta_ = dts.unsqueeze(-1)                          # (B, KD, L, 1)
+    #     A_     = As.unsqueeze(0).unsqueeze(2)               # (1, KD, 1, N)
+    #     B_     = Bs.reshape(B_batch, KD, N, L).permute(0, 1, 3, 2)  # (B, KD, L, N)
+    #     C_     = Cs.reshape(B_batch, KD, N, L).permute(0, 1, 3, 2)  # (B, KD, L, N)
+
+    #     deltaA   = torch.exp(delta_ * A_)           # (B, KD, L, N)
+    #     deltaB_u = delta_ * B_ * u.unsqueeze(-1)    # (B, KD, L, N)
+
+    #     # recurrence over L
+    #     x = torch.zeros(B_batch, KD, N, device=u.device, dtype=u.dtype)
+    #     ys = []
+    #     for i in range(L):
+    #         x = deltaA[:, :, i] * x + deltaB_u[:, :, i]   # (B, KD, N)
+    #         y = (x * C_[:, :, i]).sum(-1)                  # (B, KD)
+    #         ys.append(y)
+
+    #     out = torch.stack(ys, dim=-1)                       # (B, KD, L)
+    #     out = out + Ds.unsqueeze(0).unsqueeze(-1) * u       # skip connection
+    #     return out
+
     @staticmethod
     def _pure_pytorch_scan(u, dts, As, Bs, Cs, Ds, dt_bias, K):
         """
-        Pure PyTorch selective scan — no mamba_ssm / causal_conv1d needed.
         u, dts : (B, K*D, L)
         As     : (K*D, N)
-        Bs, Cs : (B, K, N, L)
+        Bs, Cs : (B, K, N, L)   ← K directions, NOT K*D
         Ds     : (K*D,)
         """
         B_batch, KD, L = u.shape
+        D = KD // K          # D_inner per scan direction
         N = As.shape[-1]
 
         # apply softplus + bias to delta
         dts = F.softplus(dts + dt_bias.unsqueeze(-1))  # (B, KD, L)
 
-        delta_ = dts.unsqueeze(-1)                          # (B, KD, L, 1)
-        A_     = As.unsqueeze(0).unsqueeze(2)               # (1, KD, 1, N)
-        B_     = Bs.reshape(B_batch, KD, N, L).permute(0, 1, 3, 2)  # (B, KD, L, N)
-        C_     = Cs.reshape(B_batch, KD, N, L).permute(0, 1, 3, 2)  # (B, KD, L, N)
+        # Expand Bs/Cs from (B, K, N, L) → (B, KD, N, L)
+        # Each of the K directions is shared across its D_inner channels
+        Bs = Bs.unsqueeze(2).expand(B_batch, K, D, N, L).reshape(B_batch, KD, N, L)
+        Cs = Cs.unsqueeze(2).expand(B_batch, K, D, N, L).reshape(B_batch, KD, N, L)
+
+        delta_ = dts.unsqueeze(-1)               # (B, KD, L, 1)
+        A_     = As.unsqueeze(0).unsqueeze(2)    # (1, KD, 1, N)
+        B_     = Bs.permute(0, 1, 3, 2)         # (B, KD, L, N)
+        C_     = Cs.permute(0, 1, 3, 2)         # (B, KD, L, N)
 
         deltaA   = torch.exp(delta_ * A_)           # (B, KD, L, N)
         deltaB_u = delta_ * B_ * u.unsqueeze(-1)    # (B, KD, L, N)
 
-        # recurrence over L
         x = torch.zeros(B_batch, KD, N, device=u.device, dtype=u.dtype)
         ys = []
         for i in range(L):
-            x = deltaA[:, :, i] * x + deltaB_u[:, :, i]   # (B, KD, N)
-            y = (x * C_[:, :, i]).sum(-1)                  # (B, KD)
+            x = deltaA[:, :, i] * x + deltaB_u[:, :, i]
+            y = (x * C_[:, :, i]).sum(-1)
             ys.append(y)
 
-        out = torch.stack(ys, dim=-1)                       # (B, KD, L)
-        out = out + Ds.unsqueeze(0).unsqueeze(-1) * u       # skip connection
+        out = torch.stack(ys, dim=-1)                        # (B, KD, L)
+        out = out + Ds.unsqueeze(0).unsqueeze(-1) * u        # skip connection
         return out
+    
     # an alternative to forward_corev1
     def forward_corev1(self, x: torch.Tensor):
         self.selective_scan = selective_scan_fn_v1
