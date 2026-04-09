@@ -55,10 +55,10 @@ class CFG:
     # ARCHITECTURE = "lddcm"
     # ARCHITECTURE = "dscnet"
     # ARCHITECTURE = "fr_unet"
-    ARCHITECTURE    = "sam_adapter"
+    # ARCHITECTURE = "sam_adapter"
     # ARCHITECTURE = "axnet"
     # ARCHITECTURE = "c2s_roadnet"   
-    # ARCHITECTURE = "transroadnet"
+    ARCHITECTURE = "transroadnet"
 
     RESUME = False
     RESUME_PATH = None  # or specific checkpoint path
