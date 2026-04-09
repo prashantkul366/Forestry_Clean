@@ -66,8 +66,8 @@ def build_model():
     elif arch == "h_vmunet":
         m = H_vmunet(
             num_classes=1,
-            input_channels=CFG.IN_CHANNELS,   
-            c_list=[8,16,32,64,128,256],     
+            input_channels=CFG.IN_CHANNELS,  
+            c_list=[8,16,32,64,128,256],
             depths=[2,2,2,2],
             drop_path_rate=0.0,
             bridge=True
