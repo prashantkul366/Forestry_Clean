@@ -17,8 +17,8 @@ class CFG:
     IMG_SIZE   = 256
     # IMG_SIZE   = 224 
     # BATCH_SIZE  = 8
-    BATCH_SIZE  = 4
-    # BATCH_SIZE  = 2
+    # BATCH_SIZE  = 4
+    BATCH_SIZE  = 2
     NUM_WORKERS = 2
     EPOCHS      = 1000
     # EPOCHS      = 10
@@ -55,10 +55,10 @@ class CFG:
     # ARCHITECTURE = "lddcm"
     # ARCHITECTURE = "dscnet"
     # ARCHITECTURE = "fr_unet"
-    # ARCHITECTURE = "sam_adapter"
+    ARCHITECTURE = "sam_adapter"
     # ARCHITECTURE = "axnet"
     # ARCHITECTURE = "c2s_roadnet"   
-    ARCHITECTURE = "transroadnet"
+    # ARCHITECTURE = "transroadnet"
 
     RESUME = False
     RESUME_PATH = None  # or specific checkpoint path
