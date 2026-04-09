@@ -9,17 +9,20 @@ import torch.nn.functional as F
 import torch.utils.checkpoint as checkpoint
 from einops import rearrange, repeat
 from timm.models.layers import DropPath, to_2tuple, trunc_normal_
-try:
-    from mamba_ssm.ops.selective_scan_interface import selective_scan_fn, selective_scan_ref
-except:
-    pass
+# try:
+#     from mamba_ssm.ops.selective_scan_interface import selective_scan_fn, selective_scan_ref
+# except:
+#     pass
 
-# an alternative for mamba_ssm (in which causal_conv1d is needed)
-try:
-    from selective_scan import selective_scan_fn as selective_scan_fn_v1
-    from selective_scan import selective_scan_ref as selective_scan_ref_v1
-except:
-    pass
+# # an alternative for mamba_ssm (in which causal_conv1d is needed)
+# try:
+#     from selective_scan import selective_scan_fn as selective_scan_fn_v1
+#     from selective_scan import selective_scan_ref as selective_scan_ref_v1
+# except:
+#     pass
+
+selective_scan_fn = None
+selective_scan_fn_v1 = None
 
 DropPath.__repr__ = lambda self: f"timm.DropPath({self.drop_prob})"
 
@@ -375,45 +378,113 @@ class SS2D(nn.Module):
         D._no_weight_decay = True
         return D
 
-    def forward_corev0(self, x: torch.Tensor):
-        self.selective_scan = selective_scan_fn
+    # def forward_corev0(self, x: torch.Tensor):
+    #     self.selective_scan = selective_scan_fn
         
+    #     B, C, H, W = x.shape
+    #     L = H * W
+    #     K = 4
+
+    #     x_hwwh = torch.stack([x.view(B, -1, L), torch.transpose(x, dim0=2, dim1=3).contiguous().view(B, -1, L)], dim=1).view(B, 2, -1, L)
+    #     xs = torch.cat([x_hwwh, torch.flip(x_hwwh, dims=[-1])], dim=1) # (b, k, d, l)
+
+    #     x_dbl = torch.einsum("b k d l, k c d -> b k c l", xs.view(B, K, -1, L), self.x_proj_weight)
+    #     # x_dbl = x_dbl + self.x_proj_bias.view(1, K, -1, 1)
+    #     dts, Bs, Cs = torch.split(x_dbl, [self.dt_rank, self.d_state, self.d_state], dim=2)
+    #     dts = torch.einsum("b k r l, k d r -> b k d l", dts.view(B, K, -1, L), self.dt_projs_weight)
+    #     # dts = dts + self.dt_projs_bias.view(1, K, -1, 1)
+
+    #     xs = xs.float().view(B, -1, L) # (b, k * d, l)
+    #     dts = dts.contiguous().float().view(B, -1, L) # (b, k * d, l)
+    #     Bs = Bs.float().view(B, K, -1, L) # (b, k, d_state, l)
+    #     Cs = Cs.float().view(B, K, -1, L) # (b, k, d_state, l)
+    #     Ds = self.Ds.float().view(-1) # (k * d)
+    #     As = -torch.exp(self.A_logs.float()).view(-1, self.d_state)  # (k * d, d_state)
+    #     dt_projs_bias = self.dt_projs_bias.float().view(-1) # (k * d)
+
+    #     out_y = self.selective_scan(
+    #         xs, dts, 
+    #         As, Bs, Cs, Ds, z=None,
+    #         delta_bias=dt_projs_bias,
+    #         delta_softplus=True,
+    #         return_last_state=False,
+    #     ).view(B, K, -1, L)
+    #     assert out_y.dtype == torch.float
+
+    #     inv_y = torch.flip(out_y[:, 2:4], dims=[-1]).view(B, 2, -1, L)
+    #     wh_y = torch.transpose(out_y[:, 1].view(B, -1, W, H), dim0=2, dim1=3).contiguous().view(B, -1, L)
+    #     invwh_y = torch.transpose(inv_y[:, 1].view(B, -1, W, H), dim0=2, dim1=3).contiguous().view(B, -1, L)
+
+    #     return out_y[:, 0], inv_y[:, 0], wh_y, invwh_y
+
+    def forward_corev0(self, x: torch.Tensor):
         B, C, H, W = x.shape
         L = H * W
         K = 4
 
-        x_hwwh = torch.stack([x.view(B, -1, L), torch.transpose(x, dim0=2, dim1=3).contiguous().view(B, -1, L)], dim=1).view(B, 2, -1, L)
-        xs = torch.cat([x_hwwh, torch.flip(x_hwwh, dims=[-1])], dim=1) # (b, k, d, l)
+        x_hwwh = torch.stack([
+            x.view(B, -1, L),
+            torch.transpose(x, dim0=2, dim1=3).contiguous().view(B, -1, L)
+        ], dim=1).view(B, 2, -1, L)
+        xs = torch.cat([x_hwwh, torch.flip(x_hwwh, dims=[-1])], dim=1)  # (B, K, D, L)
 
         x_dbl = torch.einsum("b k d l, k c d -> b k c l", xs.view(B, K, -1, L), self.x_proj_weight)
-        # x_dbl = x_dbl + self.x_proj_bias.view(1, K, -1, 1)
         dts, Bs, Cs = torch.split(x_dbl, [self.dt_rank, self.d_state, self.d_state], dim=2)
         dts = torch.einsum("b k r l, k d r -> b k d l", dts.view(B, K, -1, L), self.dt_projs_weight)
-        # dts = dts + self.dt_projs_bias.view(1, K, -1, 1)
 
-        xs = xs.float().view(B, -1, L) # (b, k * d, l)
-        dts = dts.contiguous().float().view(B, -1, L) # (b, k * d, l)
-        Bs = Bs.float().view(B, K, -1, L) # (b, k, d_state, l)
-        Cs = Cs.float().view(B, K, -1, L) # (b, k, d_state, l)
-        Ds = self.Ds.float().view(-1) # (k * d)
-        As = -torch.exp(self.A_logs.float()).view(-1, self.d_state)  # (k * d, d_state)
-        dt_projs_bias = self.dt_projs_bias.float().view(-1) # (k * d)
+        xs  = xs.float().view(B, -1, L)          # (B, K*D, L)
+        dts = dts.contiguous().float().view(B, -1, L)
+        Bs  = Bs.float().view(B, K, -1, L)       # (B, K, N, L)
+        Cs  = Cs.float().view(B, K, -1, L)
+        Ds  = self.Ds.float().view(-1)
+        As  = -torch.exp(self.A_logs.float()).view(-1, self.d_state)
+        dt_bias = self.dt_projs_bias.float().view(-1)
 
-        out_y = self.selective_scan(
-            xs, dts, 
-            As, Bs, Cs, Ds, z=None,
-            delta_bias=dt_projs_bias,
-            delta_softplus=True,
-            return_last_state=False,
-        ).view(B, K, -1, L)
+        out_y = self._pure_pytorch_scan(xs, dts, As, Bs, Cs, Ds, dt_bias, K)
+        out_y = out_y.view(B, K, -1, L)
         assert out_y.dtype == torch.float
 
-        inv_y = torch.flip(out_y[:, 2:4], dims=[-1]).view(B, 2, -1, L)
-        wh_y = torch.transpose(out_y[:, 1].view(B, -1, W, H), dim0=2, dim1=3).contiguous().view(B, -1, L)
+        inv_y   = torch.flip(out_y[:, 2:4], dims=[-1]).view(B, 2, -1, L)
+        wh_y    = torch.transpose(out_y[:, 1].view(B, -1, W, H), dim0=2, dim1=3).contiguous().view(B, -1, L)
         invwh_y = torch.transpose(inv_y[:, 1].view(B, -1, W, H), dim0=2, dim1=3).contiguous().view(B, -1, L)
 
         return out_y[:, 0], inv_y[:, 0], wh_y, invwh_y
 
+
+    @staticmethod
+    def _pure_pytorch_scan(u, dts, As, Bs, Cs, Ds, dt_bias, K):
+        """
+        Pure PyTorch selective scan — no mamba_ssm / causal_conv1d needed.
+        u, dts : (B, K*D, L)
+        As     : (K*D, N)
+        Bs, Cs : (B, K, N, L)
+        Ds     : (K*D,)
+        """
+        B_batch, KD, L = u.shape
+        N = As.shape[-1]
+
+        # apply softplus + bias to delta
+        dts = F.softplus(dts + dt_bias.unsqueeze(-1))  # (B, KD, L)
+
+        delta_ = dts.unsqueeze(-1)                          # (B, KD, L, 1)
+        A_     = As.unsqueeze(0).unsqueeze(2)               # (1, KD, 1, N)
+        B_     = Bs.reshape(B_batch, KD, N, L).permute(0, 1, 3, 2)  # (B, KD, L, N)
+        C_     = Cs.reshape(B_batch, KD, N, L).permute(0, 1, 3, 2)  # (B, KD, L, N)
+
+        deltaA   = torch.exp(delta_ * A_)           # (B, KD, L, N)
+        deltaB_u = delta_ * B_ * u.unsqueeze(-1)    # (B, KD, L, N)
+
+        # recurrence over L
+        x = torch.zeros(B_batch, KD, N, device=u.device, dtype=u.dtype)
+        ys = []
+        for i in range(L):
+            x = deltaA[:, :, i] * x + deltaB_u[:, :, i]   # (B, KD, N)
+            y = (x * C_[:, :, i]).sum(-1)                  # (B, KD)
+            ys.append(y)
+
+        out = torch.stack(ys, dim=-1)                       # (B, KD, L)
+        out = out + Ds.unsqueeze(0).unsqueeze(-1) * u       # skip connection
+        return out
     # an alternative to forward_corev1
     def forward_corev1(self, x: torch.Tensor):
         self.selective_scan = selective_scan_fn_v1
