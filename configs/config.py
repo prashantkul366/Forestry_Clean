@@ -70,8 +70,8 @@ class CFG:
     # Run A3:  ABLATION_CHANNELS = [0, 2]    → Dual 45°+225°
     # Run A4:  ABLATION_CHANNELS = [0,1,2,3] → Proposed (already done)
 
-    ABLATION_CHANNELS = [0]
-    # ABLATION_CHANNELS = [1]
+    # ABLATION_CHANNELS = [0]
+    ABLATION_CHANNELS = [1]
     # ABLATION_CHANNELS = [0, 2]
     # ABLATION_CHANNELS = [0, 1, 2, 3]        # ← only line you change per run
     IN_CHANNELS       = len(ABLATION_CHANNELS)  # auto-set, don't touch
