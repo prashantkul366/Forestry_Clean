@@ -5,11 +5,14 @@ from torch.utils.data import Dataset
 
 class HillshadeDataset(Dataset):
     def __init__(self, img_dir, mask_dir, transform=None,
-                 road_biased=True, road_ratio=0.70, road_min_pixels=30):
+                 road_biased=True, road_ratio=0.70, road_min_pixels=30, 
+                 ablation_channels=None):
 
         self.img_files  = sorted(glob.glob(f"{img_dir}/*.npy"))
         self.mask_files = sorted(glob.glob(f"{mask_dir}/*.npy"))
         self.transform  = transform
+        self.ablation_channels = ablation_channels
+
 
         self.road_files, self.bg_files = [], []
 
@@ -37,7 +40,7 @@ class HillshadeDataset(Dataset):
 
     #     mask = (mask > 0.5).astype(np.float32)
     #     return img, mask
-    
+
     def _load(self, img_path, mask_path):
         img  = np.load(img_path).astype(np.float32)   # shape: [4, H, W]
         mask = np.load(mask_path).astype(np.float32)
