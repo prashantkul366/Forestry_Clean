@@ -63,18 +63,19 @@ class CFG:
     # ── Ablation Control ──────────────────────────────────────────
     # Channel index mapping:
     #   0 = az_45,  1 = az_135,  2 = az_225,  3 = az_315
-    #
-    # Run A1:  ABLATION_CHANNELS = [0]       → Single 45°
 
+    # Run A1:  ABLATION_CHANNELS = [0]       → Single 45°
     # Run A2:  ABLATION_CHANNELS = [1]       → Single 135°
     # Run A3:  ABLATION_CHANNELS = [0, 2]    → Dual 45°+225°
     # Run A4:  ABLATION_CHANNELS = [0,1,2,3] → Proposed (already done)
 
     # ABLATION_CHANNELS = [0]
     # ABLATION_CHANNELS = [1]
-    ABLATION_CHANNELS = [0, 2]
-    # ABLATION_CHANNELS = [0, 1, 2, 3]        # ← only line you change per run
-    IN_CHANNELS       = len(ABLATION_CHANNELS)  # auto-set, don't touch
+    # ABLATION_CHANNELS = [0, 2]
+    ABLATION_CHANNELS = [1, 3]
+    # ABLATION_CHANNELS = [0, 1, 2, 3]      
+
+    IN_CHANNELS       = len(ABLATION_CHANNELS)  
     # ─────────────────────────────────────────────────────────────
 
 
