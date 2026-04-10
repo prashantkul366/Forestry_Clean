@@ -36,11 +36,11 @@ class CFG:
     # SAM_CHECKPOINT  = "content/drive/MyDrive/Prashant/Pretrain/sam_vit_b_01ec64.pth"
     SAM_CHECKPOINT  = "/content/drive/MyDrive/Prashant/Pretrain/sam_vit_b_01ec64.pth"
     SAM_MODEL_TYPE  = "vit_b"
-    IN_CHANNELS  = 4
+    # IN_CHANNELS  = 4
 
 
 
-    # ARCHITECTURE = "unet"
+    ARCHITECTURE = "unet"
     # ARCHITECTURE = "unetplusplus" 
     # ARCHITECTURE = "segformer"
     # ARCHITECTURE = "unext"
@@ -48,7 +48,7 @@ class CFG:
     # ARCHITECTURE = "transunet"
     # ARCHITECTURE = "swinunet"
     # ARCHITECTURE = "acc_unet"
-    ARCHITECTURE = "h_vmunet"
+    # ARCHITECTURE = "h_vmunet"
     # ARCHITECTURE = "egeunet"
     # ARCHITECTURE = "samseg" 
     # ARCHITECTURE = "ukan"
@@ -59,6 +59,24 @@ class CFG:
     # ARCHITECTURE = "axnet"
     # ARCHITECTURE = "c2s_roadnet"   
     # ARCHITECTURE = "transroadnet"
+
+    # ── Ablation Control ──────────────────────────────────────────
+    # Channel index mapping:
+    #   0 = az_45,  1 = az_135,  2 = az_225,  3 = az_315
+    #
+    # Run A1:  ABLATION_CHANNELS = [0]       → Single 45°
+
+    # Run A2:  ABLATION_CHANNELS = [1]       → Single 135°
+    # Run A3:  ABLATION_CHANNELS = [0, 2]    → Dual 45°+225°
+    # Run A4:  ABLATION_CHANNELS = [0,1,2,3] → Proposed (already done)
+
+    ABLATION_CHANNELS = [0]
+    # ABLATION_CHANNELS = [1]
+    # ABLATION_CHANNELS = [0, 2]
+    # ABLATION_CHANNELS = [0, 1, 2, 3]        # ← only line you change per run
+    IN_CHANNELS       = len(ABLATION_CHANNELS)  # auto-set, don't touch
+    # ─────────────────────────────────────────────────────────────
+
 
     RESUME = False
     RESUME_PATH = None  # or specific checkpoint path

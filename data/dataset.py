@@ -28,12 +28,27 @@ class HillshadeDataset(Dataset):
     def __len__(self):
         return len(self.img_files)
 
+    # def _load(self, img_path, mask_path):
+    #     img  = np.load(img_path).astype(np.float32)
+    #     mask = np.load(mask_path).astype(np.float32)
+
+    #     if img.shape[0] == 4:
+    #         img = img.transpose(1, 2, 0)
+
+    #     mask = (mask > 0.5).astype(np.float32)
+    #     return img, mask
+    
     def _load(self, img_path, mask_path):
-        img  = np.load(img_path).astype(np.float32)
+        img  = np.load(img_path).astype(np.float32)   # shape: [4, H, W]
         mask = np.load(mask_path).astype(np.float32)
 
-        if img.shape[0] == 4:
-            img = img.transpose(1, 2, 0)
+        # ── Channel selection for ablation ──────────────────────
+        if self.ablation_channels is not None:
+            img = img[self.ablation_channels]           # e.g. [0] → [1,H,W]
+        # ────────────────────────────────────────────────────────
+
+        if img.shape[0] in [1, 2, 4]:                  # generalised check
+            img = img.transpose(1, 2, 0)               # → [H, W, C]
 
         mask = (mask > 0.5).astype(np.float32)
         return img, mask

@@ -134,6 +134,7 @@ def build_dataloaders():
         road_biased=True,
         road_ratio=CFG.ROAD_RATIO,
         road_min_pixels=CFG.ROAD_MIN_PIXELS,
+        ablation_channels=CFG.ABLATION_CHANNELS,
     )
 
     val_ds = HillshadeDataset(
@@ -141,6 +142,7 @@ def build_dataloaders():
         CFG.VAL_MASKS,
         transform=get_transforms("val"),
         road_biased=False,
+        ablation_channels=CFG.ABLATION_CHANNELS, 
     )
 
     # train_loader = DataLoader(
