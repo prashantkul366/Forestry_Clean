@@ -12,7 +12,7 @@ class HillshadeDataset(Dataset):
         self.mask_files = sorted(glob.glob(f"{mask_dir}/*.npy"))
         self.transform  = transform
         self.ablation_channels = ablation_channels
-
+        print(f"Ablation channels: {self.ablation_channels} → IN_CHANNELS={len(self.ablation_channels) if self.ablation_channels else 'ALL'}")
 
         self.road_files, self.bg_files = [], []
 
