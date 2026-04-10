@@ -72,7 +72,8 @@ class CFG:
     # ABLATION_CHANNELS = [0]
     # ABLATION_CHANNELS = [1]
     # ABLATION_CHANNELS = [2]
-    ABLATION_CHANNELS = [3]
+    # ABLATION_CHANNELS = [3]
+    ABLATION_CHANNELS = [0, 1]
     # ABLATION_CHANNELS = [0, 2]
     # ABLATION_CHANNELS = [1, 3] # Dual 135°+315° (new ablation)
     # ABLATION_CHANNELS = [0, 1, 2, 3]      
